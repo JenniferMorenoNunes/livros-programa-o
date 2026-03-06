@@ -1,4 +1,4 @@
-function mensagem (f:string):string{
+ function mensagem (f:string):string{
     return f;
 }
 
