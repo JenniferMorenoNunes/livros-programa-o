@@ -31,3 +31,5 @@ function numero(numeros:number [] ) : number[]{
 }
 let numeros=[2,3,5]
 console.log( "oi",numero(numeros))
+
+//exercicio 4 
