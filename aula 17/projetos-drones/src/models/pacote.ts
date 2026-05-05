@@ -1,12 +1,9 @@
-export class pacote {
+export class pacote{
     peso : number;
     descricao: string;
 
-
-    constructor(peso: number, descricao: string) {
-        this.peso = peso;
-        this.descricao = descricao;
-
-       
+    constructor(peso: number, descricao: string){
+    this.peso = peso;
+    this.descricao = descricao;
     }
 }
