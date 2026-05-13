@@ -8,18 +8,28 @@ const PORT = process.env.PORT ?? 3000;
 app.use(express.json());
 
 const produtos: Produto[] =[];
+let PrId = 1; //definiir id como um e dps sempre chamar novo para o prox ao cadastrar new pedido;
 
 
 //cadastrar
 function cadastrarProduto(req: Request, res: Response):void{
     try{
         let data:any = req.body;
-        if(!data.nome || !data.preco || !data.fabricante){
-            throw new Error("Favor enviar os valores corretos");    
+    
+        if (data.preco <= 0){
+            throw new Error("O preco deve ser maior que zero");//verifica preco
         }
-        let endereco = new Endereco( data.fabricante.endereco.cidade, data.fabricante.endereco.pais);
-        let fab = new Fabricante(data.fabricante.nome, endereco);
-        let produto = new Produto(produtos.length + 1, data.nome, data.preco, fab);
+        if (!data.fabricante.nome){
+            throw new Error("O fabrigante deve ter um nome");// verifica se fabricante tem nome
+        }
+        if(!data.fabricante.endereco.cidade || !data.fabricante.endereco.pais){
+            throw new Error("O fabricante deve ter um endereco valido")//verifica cidade e pais
+        }
+
+
+        let endereco = new Endereco( data.fabricante.endereco.cidade,data.fabricante.endereco.pais);
+        let fab = new Fabricante(data.fabricante.nome,endereco);
+        let produto = new Produto(PrId++, data.nome,data.preco,fab);//mpedir id duplicado;
 
         produtos.push(produto);
         res.status(201).json(produto);
@@ -38,7 +48,7 @@ function listarProdutos(req: Request, res : Response): void{
 function buscarPorID(req: Request, res: Response): void {
     try {
         let id: any = req.params.id;
-        const produto = produtos.find(p => p.id === id);
+        const produto = produtos.find(p=>p.id === parseInt(id)); //parseInt para converter string em numero
 
         if (!produto) {
             res.status(404).json({ Message: "Produto não encontrado" });
@@ -50,19 +60,7 @@ function buscarPorID(req: Request, res: Response): void {
     }catch(e: unknown){
         res.status(404).json({Message: "informe um ID válido"});
     }
-}
-//busca nome
-function filtraProdutoPorNome(req: Request, res: Response):void{
-    try{
-        let name:any = req.query.name;
-        
-        res.status(200).json({Name: name });
-
-    }catch(e: unknown){
-        res.status(400).json({Message: "Necessário informar um ID válido"});
     }
-} 
-
     //ataualizar produto
     function atualizarProduto(req: Request, res: Response): void{
         try {
@@ -90,7 +88,7 @@ function filtraProdutoPorNome(req: Request, res: Response):void{
 function removerProduto(req: Request, res: Response): void{
     try {
         let id: any = req.params.id;
-        const produtoIndex = produtos.findIndex(p => p.id === id);  
+        const produtoIndex = produtos.findIndex(p => p.id === parseInt(id));  
 
         if (produtoIndex === -1) {
             res.status(404).json({ Message: "Produto não encontrado" });
@@ -105,8 +103,8 @@ function removerProduto(req: Request, res: Response): void{
     }
 }
 app.get('/api/produto/:id', buscarPorID);
-app.get('/api/produto/:nome', filtraProdutoPorNome);
 app.post('/api/produto',cadastrarProduto);
 app.get('/api/produto', listarProdutos);
 app.put('/api/produto/:id', atualizarProduto);
+app.delete('/api/produto/:id', removerProduto);
 app.listen(PORT, () => console.log(`API rodando na URL : http://localhost:${PORT}`));
