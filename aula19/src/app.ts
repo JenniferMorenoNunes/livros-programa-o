@@ -88,7 +88,7 @@ function buscarPorID(req: Request, res: Response): void {
 function removerProduto(req: Request, res: Response): void{
     try {
         let id: any = req.params.id;
-        const produtoIndex = produtos.findIndex(p => p.id === parseInt(id));  
+        const produtoIndex = produtos.findIndex(p => p.id === parseInt(id));  //
 
         if (produtoIndex === -1) {
             res.status(404).json({ Message: "Produto não encontrado" });
